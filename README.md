@@ -2,7 +2,7 @@
 
 SenseCraft **authapi** Agent Skill：邮箱注册/登录、验证码、Google / Apple / GitHub OAuth、token 刷新、用户资料 API。
 
-**一个仓库、一份 Skill** — 不包含 Voice 业务 JWT、BLE 等产品逻辑。各 App 的代码路径见该 App 仓库内 `docs/AUTH_MODULE.md`（如 reSpeaker）。
+**一个仓库、一份 Skill** — 不包含 Voice 业务 JWT、BLE 等产品逻辑。各 App 的代码路径见 auth 模块与路由文档（如 reSpeaker 的 `lib/src/features/auth/`、`docs/APP_ROUTES.md`）。
 
 ---
 
@@ -55,7 +55,7 @@ reSpeaker_app/
 | **sensecraft-auth-skill**（本仓库） | SenseCraft authapi 通用知识 |
 | **respeaker-app** 等 | 具体代码、路由、Mermaid 文档；**不复制 Skill** |
 
-Agent 在 reSpeaker 改登录：读 **本 Skill** + **`respeaker-app/docs/AUTH_MODULE.md`**。
+Agent 在 reSpeaker 改登录：读 **本 Skill** + **`respeaker-app/lib/src/features/auth/`** 与 **`docs/APP_ROUTES.md`**。
 
 ---
 

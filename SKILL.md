@@ -5,7 +5,7 @@ description: >-
   codes, password reset, Google/Apple/GitHub OAuth via oauth/mobile, token refresh,
   and user profile APIs. Use when modifying SenseCraft login, OAuth, authapi HTTP,
   IdP Client ID config, or debugging auth failures. Framework-agnostic; pair with the
-  host app's docs/AUTH_MODULE.md for code paths. Excludes product-specific business
+  host app's auth module and route docs for code paths. Excludes product-specific business
   JWT exchange after SenseCraft login.
 ---
 
@@ -24,7 +24,7 @@ description: >-
 | Google / Apple / GitHub IdP 配置 | — |
 
 **登录成功终点（SenseCraft 层）**：`data.token` + `data.refresh_token` 持久化。  
-之后的产品业务 JWT 交换见宿主 App 文档（如 reSpeaker 的 `docs/AUTH_MODULE.md` 范围说明）。
+之后的产品业务 JWT 交换见宿主 App 实现（如 reSpeaker 的 Voice 网关登录逻辑）。
 
 ---
 
@@ -34,14 +34,14 @@ description: >-
 任务类型？
 ├─ 改 API/客户端   → reference.md 接口矩阵 + 宿主项目 Repository 实现
 ├─ 配 IdP/编译     → reference.md §IdP + 编译变量
-├─ 改 UI/路由      → 宿主 App 的 docs/AUTH_MODULE.md §6
+├─ 改 UI/路由      → 宿主 App auth 模块 + 路由文档（如 `APP_ROUTES.md`）
 ├─ 排错            → §排错决策树 + examples.md
 └─ 新增 OAuth 厂商 → §Checklist + examples.md §4
 ```
 
 1. 读 [reference.md](reference.md)（API、错误码、IdP）
-2. 若在当前 App 仓库内：读该 App 的 `docs/AUTH_MODULE.md`（代码路径、路由）
-3. 改 authapi 行为时：同步更新 **sensecraft-auth-skill** 仓库 + 宿主 App 的 `docs/AUTH_MODULE.md`（若有）
+2. 若在当前 App 仓库内：读 auth 源码与路由（如 `lib/src/features/auth/`、`docs/APP_ROUTES.md`）
+3. 改 authapi 行为时：同步更新 **sensecraft-auth-skill** 仓库
 
 ---
 
@@ -128,9 +128,10 @@ SenseCraft token + refresh_token
 ### Google
 
 - **Web Client ID** = mobile `serverClientId` → `id_token.aud`，须与 SenseCraft 环境一致
-- Android：包名 + Debug/Release **SHA-1**
+- Android：包名 + Debug/Release（及 Play App Signing）**SHA-1**；Cloud Console **每条 Android OAuth 客户端 = 一个 SHA-1**，多条客户端会有不同 Client ID，**仅 Console 登记，不写进 App 代码**
+- App 代码只配 **Web** `serverClientId`（按环境 PROD/DEV）；Google Play Services 按当前安装包签名自动匹配对应 Android 客户端
 - iOS：Bundle ID + `GIDClientID` + reversed URL scheme
-- **Web Client ID ≠ iOS GIDClientID**（见 reference.md）
+- **Web Client ID ≠ iOS GIDClientID ≠ Android Client ID**（见 reference.md）
 - **不用 Firebase**
 
 | 环境 | Web Client ID（Seeed 示例） |

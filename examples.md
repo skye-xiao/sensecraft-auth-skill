@@ -1,6 +1,6 @@
 # SenseCraft Auth — Examples
 
-> 配合 [SKILL.md](SKILL.md)。宿主 App 文件路径见 `docs/AUTH_MODULE.md`。
+> 配合 [SKILL.md](SKILL.md)。宿主 App 代码路径见 auth 模块与路由文档（如 `lib/src/features/auth/`、`docs/APP_ROUTES.md`）。
 
 ---
 
@@ -8,13 +8,15 @@
 
 1. 确认 **Web serverClientId** 与 `APP_ENV` / authapi 集群一致（PROD vs DEV）
 2. 检查 `GOOGLE_SERVER_CLIENT_ID` 是否误覆盖
-3. Android：Console 中 **Release keystore SHA-1**（非 Debug）
+3. Android：Cloud Console 为**当前安装包签名**新建/核对 **Android OAuth 客户端**（包名 + SHA-1）；Debug 与 Release（及 Play App signing）**各一条**，Client ID 不同属正常，**不必写进 App**
 4. Android 包名与 OAuth 客户端一致
-5. iOS：`GIDClientID` 为 **iOS 客户端** ID（不是 Web ID）
-6. 有 idToken 但 `oauth/mobile` 17001 → `id_token.aud` 与环境 Web Client 不匹配
-7. Android `strings.xml` 的 `default_web_client_id`（若有）**不能**代替按环境的 Dart/配置逻辑
+5. 上架 Play 后：在 Console 补充 **Play 控制台 → App signing key certificate** 的 SHA-1（不是只用 upload key）
+6. iOS：`GIDClientID` 为 **iOS 客户端** ID（不是 Web ID）
+7. 有 idToken 但 `oauth/mobile` 17001 → `id_token.aud` 与环境 Web Client 不匹配
+8. 选账号前即失败 / **DEVELOPER_ERROR (10)** / **canceled** → 多为缺 Android 客户端或 SHA-1 不匹配（IdP 层）
+9. Android `strings.xml` 的 `default_web_client_id`（若有）**不能**代替按环境的 Dart/配置逻辑
 
-**不要**：在 Web 客户端上配置 custom scheme redirect。
+**不要**：在 Web 客户端上配置 custom scheme redirect；**不要**把 Android OAuth Client ID 当作 `serverClientId` 写进代码。
 
 ---
 
@@ -29,7 +31,7 @@
 3. 重新生成 **Provisioning Profile**（旧描述文件不含 Capability 会失败）
 4. 真机测试（模拟器行为与证书可能不一致）
 5. `oauth/mobile`：`accountType: apple`，`idToken` = `identityToken`（JWT 字符串）
-6. 用户选「隐藏邮箱」时，首次可能无 email — 由宿主 App 引导绑定（见宿主 `docs/AUTH_MODULE.md` 路由）
+6. 用户选「隐藏邮箱」时，首次可能无 email — 由宿主 App 引导绑定（见宿主路由，如 `/link-identity`）
 
 **oauth/mobile 17001**：检查 `identityToken` 是否为空、是否过期；authapi 集群是否与测试环境一致。
 
@@ -38,7 +40,7 @@
 ## 示例 3：GitHub 登录无 code
 
 1. GitHub OAuth App **Authorization callback URL** === App 内 `redirect_uri`（**字符完全一致**，scheme **小写**）
-2. 示例形态：`{your-scheme}://oauth-callback` — 具体值见宿主 `docs/THIRD_PARTY_LOGIN.md`（勿在通用 Skill 里写死）
+2. 示例形态：`{your-scheme}://oauth-callback` — 具体值见宿主 App OAuth 配置（勿在通用 Skill 里写死）
 3. Android：专用 **Callback Activity**（或等价）注册 deep link，不要只挂 MainActivity
 4. iOS：`Info.plist` → `CFBundleURLSchemes` 含 callback 的 scheme
 5. Flutter `flutter_web_auth_2`：scheme 须匹配 `^[a-z][a-z\d+.-]*$`
@@ -64,7 +66,7 @@
 2. 客户端 IdP 流程 → `oauth/mobile`
 3. IdP 控制台 + 原生 deep link（若需要）
 4. 错误码 17002 / 17001 的用户提示
-5. PR 更新 **sensecraft-auth-skill** + 宿主 `docs/AUTH_MODULE.md`
+5. PR 更新 **sensecraft-auth-skill**
 
 **Credential 决策**：
 
@@ -107,5 +109,5 @@
 - [ ] email/login 用 multipart
 - [ ] pre-login 不带 stale Authorization
 - [ ] 未把产品业务 JWT 混进 SenseCraft-only 文档
-- [ ] 同步 sensecraft-auth-skill + 宿主 docs/AUTH_MODULE.md
+- [ ] 同步 sensecraft-auth-skill
 ```

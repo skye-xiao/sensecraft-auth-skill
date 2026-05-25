@@ -6,6 +6,7 @@
 
 ### Added
 
+- Google：多 SHA-1 / 多 Android Client ID 与 Web `serverClientId` 分工（reference §Google、SKILL §Google、examples §1）
 - Apple Sign in 排错示例（examples §2）
 - `registerByEmail` / `resetPassword` / `changePassword` 请求体（reference）
 - 扩展错误码表（10009、11102、17003 等）
@@ -14,7 +15,7 @@
 
 ### Changed
 
-- 移除 overlay Skill 表述；统一为「Skill + 宿主 docs/AUTH_MODULE.md」
+- 宿主集成说明：指向 auth 源码与 `APP_ROUTES.md`（替代已移除的 `AUTH_MODULE.md` 引用）
 - examples 重组为 9 节（含注册流程、11013）
 
 ## [1.0.0] - 2026-05-25

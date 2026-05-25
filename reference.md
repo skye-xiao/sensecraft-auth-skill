@@ -1,6 +1,6 @@
 # SenseCraft Auth — Reference
 
-> 补充 [SKILL.md](SKILL.md)。宿主 App 代码路径见各项目 `docs/AUTH_MODULE.md`。
+> 配合 [SKILL.md](SKILL.md)。宿主 App 代码路径见各项目 auth 模块与路由文档（如 reSpeaker 的 `lib/src/features/auth/`、`docs/APP_ROUTES.md`）。
 
 ## authapi 接口矩阵
 
@@ -127,7 +127,7 @@ GitHub：`accountType`, `platform`, `code`
 ## OpenAPI / 权威字段
 
 接口字段以 **线上 SenseCraft authapi OpenAPI** 为准（内网或运维提供的 swagger）。  
-本 Skill 与宿主 `docs/AUTH_MODULE.md` 应与 OpenAPI 及当前 App 实现保持一致；冲突时：**OpenAPI + 线上行为 > 旧文档**。
+本 Skill 与宿主 App auth 实现及 **SenseCraft authapi OpenAPI** 保持一致；冲突时：**OpenAPI + 线上行为 > 旧文档**。
 
 ---
 
@@ -135,13 +135,21 @@ GitHub：`accountType`, `platform`, `code`
 
 ### Google
 
-| 类型 | 作用 |
-|------|------|
-| **Web** | mobile `serverClientId` → `id_token.aud` |
-| **Android** | 包名 + SHA-1（Debug + Release） |
-| **iOS** | Bundle ID + `GIDClientID` + reversed scheme |
+| 类型 | 作用 | 写进 App 代码？ |
+|------|------|----------------|
+| **Web** | mobile `serverClientId` → `id_token.aud`；须与 SenseCraft 环境（PROD/DEV）一致 | **是**（通常 1～2 个，按环境切换） |
+| **Android** | 包名 + SHA-1；Google Play Services 按**当前安装包签名**自动选用匹配的 Android OAuth 客户端 | **否**（只在 Google Cloud Console 登记） |
+| **iOS** | Bundle ID + `GIDClientID` + reversed scheme | **是**（`GIDClientID` 为 iOS 客户端 ID，不是 Web ID） |
 
-**Web Client ID ≠ iOS GIDClientID** — 同一 Cloud 项目下两个不同客户端。
+**多个 SHA-1 怎么办**
+
+- Debug keystore、Release keystore、Google Play **App signing certificate** 的 SHA-1 **往往各不相同**。
+- 在 Google Cloud Console → Credentials → **Android OAuth 客户端**：每条凭证 = **一个包名 + 一个 SHA-1** → 会得到**多个不同的 Android Client ID**（正常）。
+- **不要**因为 Android Client ID 变多个就去改 App 里的 `serverClientId`；代码里始终用 **Web Client ID**。
+- 缺当前安装包 SHA-1 对应的 Android 客户端 → 选账号前失败，常见 **DEVELOPER_ERROR (10)** 或 **canceled**（IdP 层，未到 `oauth/mobile`）。
+- Firebase 控制台可在**同一个 Android App** 下添加多个 SHA-1；OAuth Android 客户端在 Cloud Console 仍是「一条 SHA-1 一条凭证」。
+
+**Web Client ID ≠ iOS GIDClientID ≠ Android Client ID** — 同一 Cloud 项目下三种不同 OAuth 客户端。
 
 勿把 Web 客户端 redirect 设为 custom URL scheme。
 
@@ -183,9 +191,9 @@ App ID 开启 Sign in with Apple；Xcode Capability；传 `identityToken` 为 `i
 
 ## 宿主 App 集成
 
-本 Skill **不含**具体工程路径。在宿主 App 仓库内查阅人类文档，例如 reSpeaker：
+本 Skill **不含**具体工程路径。在宿主 App 仓库内查阅，例如 reSpeaker：
 
-- `docs/AUTH_MODULE.md` — 代码地图、路由、流程图
-- `docs/THIRD_PARTY_LOGIN.md` — 本产品 Client ID / callback
+- `lib/src/features/auth/` — 登录 / OAuth 实现
+- `docs/APP_ROUTES.md` — 登录相关路由（`/login`、`/login/authorize` 等）
 
-Agent 任务 = 本 Skill + 宿主 `docs/AUTH_MODULE.md`。
+Agent 任务 = **本 Skill** + 宿主 App auth 源码与路由文档。
