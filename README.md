@@ -23,7 +23,11 @@ Agent 改登录时：**本 Skill** + **宿主 App 的 auth 源码与路由文档
 
 ## 安装
 
-### 任意项目（推荐，团队统一）
+详细步骤（**Cursor / Claude Code / Codex** 路径、确认是否加载、常见错误）见 **[SETUP.md](SETUP.md)**。
+
+> Skill **没有**单独 JSON 配置；各工具自动扫描 `~/.cursor/skills/`、`~/.claude/skills/`、`~/.codex/skills/` 等目录。安装文件夹名必须为 **`sensecraft-auth`**（与 `SKILL.md` 里 `name` 一致）。
+
+### 任意项目（推荐，团队统一 — Cursor 全局）
 
 ```bash
 git clone https://github.com/skye-xiao/sensecraft-auth-skill.git \
@@ -32,7 +36,9 @@ git clone https://github.com/skye-xiao/sensecraft-auth-skill.git \
 
 > 仓库 canonical remote 为 `skye-xiao/sensecraft-auth-skill`；若组织迁移至 `Seeed-Studio/sensecraft-auth-skill`，将 URL 替换即可。
 
-Cursor / Claude：`@sensecraft-auth`  
+Cursor：`@sensecraft-auth` 或 `/sensecraft-auth`（见 [SETUP.md](SETUP.md) §Cursor）  
+Claude Code / Codex：安装到 `~/.claude/skills/` / `~/.codex/skills/`（见 [SETUP.md](SETUP.md)）
+
 更新：`cd ~/.cursor/skills/sensecraft-auth && git pull`
 
 ### 作为子模块挂在 App 仓库里
@@ -62,6 +68,7 @@ your-workspace/
 | [reference.md](reference.md) | API、错误码、IdP |
 | [examples.md](examples.md) | 排错、新增 OAuth |
 | [INTEGRATION.md](INTEGRATION.md) | 宿主 App 集成契约与检查清单 |
+| [SETUP.md](SETUP.md) | Cursor / Claude / Codex 安装与排错 |
 | [CHANGELOG.md](CHANGELOG.md) | 版本变更 |
 
 ---
