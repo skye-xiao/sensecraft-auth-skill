@@ -6,6 +6,13 @@
 
 ### Added
 
+- SKILL §环境 × authapi × Web Client ID：`cn` 与 `release` 同属 PROD 档
+- reference §oauth/mobile：Google / Apple / GitHub 完整 JSON 请求与成功响应示例
+- SKILL / reference：明确 authapi ≠ 产品后端（`sensecraft-respeaker-service` 等）
+
+### Changed
+
+- README clone URL 统一为 `skye-xiao/sensecraft-auth-skill`（与当前 remote 一致）
 - [INTEGRATION.md](INTEGRATION.md)：宿主 App 集成契约、Google 组织级 vs App 级 Client、已知宿主索引、自检清单
 - Google：多 SHA-1 / 多 Android Client ID 与 Web `serverClientId` 分工（reference §Google、SKILL §Google、examples §1）
 - examples §1b：Web Client 误用于原生登录（`Custom scheme URIs are not allowed for 'WEB' client type`）
@@ -31,5 +38,5 @@
 - 排错决策树、新增 OAuth checklist
 - 团队安装说明（`~/.cursor/skills`、submodule、monorepo 链接）
 
-[Unreleased]: https://github.com/Seeed-Studio/sensecraft-auth-skill/compare/v1.0.0...HEAD
-[1.0.0]: https://github.com/Seeed-Studio/sensecraft-auth-skill/releases/tag/v1.0.0
+[Unreleased]: https://github.com/skye-xiao/sensecraft-auth-skill/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/skye-xiao/sensecraft-auth-skill/releases/tag/v1.0.0

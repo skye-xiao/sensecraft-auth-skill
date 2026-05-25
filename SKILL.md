@@ -17,11 +17,13 @@ description: >-
 
 | 在范围内 | 不在范围内（除非用户明确要求） |
 |----------|-------------------------------|
-| `authDomain()` / authapi HTTP | 产品业务网关（Portal 等） |
+| `authDomain()` / **SenseCraft authapi** HTTP | **产品业务后端**（如 Voice 网关、`sensecraft-respeaker-service` 的 `/api/v1/user/app/login` 等） |
 | 邮箱验证码、注册、登录、重置密码 | 产品自有 JWT / Portal 登录（各 App 路径不同，见 [INTEGRATION.md](INTEGRATION.md)） |
 | `POST /api/v1/auth/oauth/mobile` | BLE、设备、非 auth 业务 API |
 | SenseCraft `token` + `refresh_token` | — |
 | Google / Apple / GitHub IdP 配置 | — |
+
+**authapi ≠ 产品 API 后端**：本 Skill 的 Host 为 `sensecraft-auth.seeed.cc` / `.seeed.cn` / 内网 authapi；**不要**与产品服务（如 `sensecraft-respeaker-service`、Portal `portalapi`）的登录接口混用。OAuth 走 authapi 时提交 `oauth/mobile`，不是产品后端的 `app/login`。
 
 **登录成功终点（SenseCraft 层）**：`data.token` + `data.refresh_token` 持久化。  
 之后的产品业务 JWT / 网关登录见各宿主 App（见 [INTEGRATION.md](INTEGRATION.md) §SenseCraft 层 vs 产品层）。
@@ -63,13 +65,25 @@ SenseCraft token + refresh_token
 
 ## 环境与服务地址
 
-| 环境键 | authapi Base URL |
-|--------|------------------|
-| `release` / `prod` | `https://sensecraft-auth.seeed.cc/authapi/` |
-| `cn` / `china` | `https://sensecraft-auth.seeed.cn/authapi/` |
-| `dev` / `test` / `local` | `https://intranet-sensecap-env-expose-publicdns.seeed.cc/authapi/` |
+### 环境 × authapi × Web Client ID（Google `serverClientId`）
 
-- 覆盖：`AUTH_BASE_URL=https://…/authapi/`（**须尾斜杠**）
+三者须**同档配对**；`id_token.aud` 须与 SenseCraft 校验用的 Web Client 一致，否则 `oauth/mobile` 返回 **17001**。
+
+| App 环境键 | authapi Base URL | Google Web `serverClientId` | 说明 |
+|------------|------------------|----------------------------|------|
+| `release` / `prod` / `production` | `https://sensecraft-auth.seeed.cc/authapi/` | **PROD** | 国际生产 |
+| `cn` / `china` | `https://sensecraft-auth.seeed.cn/authapi/` | **PROD** | 国内生产（与国际共用 PROD Web Client aud） |
+| `dev` / `test` / `local` / `debug` / `qa` / `uat` | `https://intranet-sensecap-env-expose-publicdns.seeed.cc/authapi/` | **DEV** | 内网测试 |
+
+| 档位 | Web Client ID |
+|------|---------------|
+| **PROD** | `721415563732-gvsfu25trpg6buls5l6kvpf7fqhfrarg.apps.googleusercontent.com` |
+| **DEV** | `721415563732-onmkav3p8u5ahq35265am22ulbm6kf9p.apps.googleusercontent.com` |
+
+- 覆盖 authapi：`AUTH_BASE_URL=https://…/authapi/`（**须尾斜杠**）
+- 覆盖 Web Client：`GOOGLE_SERVER_CLIENT_ID=…` 或宿主 App 环境选择逻辑
+- **`cn` 与 `release` 同属 PROD 档**：authapi 域名不同，但 Google `serverClientId` 仍用 PROD（勿在国内生产误用 DEV Client）
+- 验证码 `language`：authapi host 含 `.cn` → `cn`，否则 `en`（与 Web Client 档位独立）
 
 ---
 
@@ -127,19 +141,14 @@ SenseCraft token + refresh_token
 
 ### Google
 
-- **Web Client ID** = mobile `serverClientId` → `id_token.aud`，须与 SenseCraft 环境一致
+- **Web Client ID** = mobile `serverClientId` → `id_token.aud`，须与上表 **PROD/DEV 档位**一致（见 §环境 × authapi × Web Client ID）
 - Android：包名 + Debug/Release（及 Play App Signing）**SHA-1**；Cloud Console **每条 Android OAuth 客户端 = 一个 SHA-1**，多条客户端会有不同 Client ID，**仅 Console 登记，不写进 App 代码**
-- App 代码只配 **Web** `serverClientId`（按环境 PROD/DEV）；Google Play Services 按当前安装包签名自动匹配对应 Android 客户端
+- App 代码只配 **Web** `serverClientId`（按 PROD/DEV 档位）；Google Play Services 按当前安装包签名自动匹配对应 Android 客户端
 - iOS：Bundle ID + `GIDClientID` + reversed URL scheme
 - **Web Client ID ≠ iOS GIDClientID ≠ Android Client ID**（见 reference.md）
 - **不用 Firebase**
 
-| 环境 | Web Client ID（Seeed 组织级，作 `serverClientId`） |
-|------|--------------------------------------------------|
-| PROD / 国际 | `721415563732-gvsfu25trpg6buls5l6kvpf7fqhfrarg.apps.googleusercontent.com` |
-| DEV / 测试 | `721415563732-onmkav3p8u5ahq35265am22ulbm6kf9p.apps.googleusercontent.com` |
-
-各 App 仍须在 Google Cloud Console 创建**自己的** iOS / Android OAuth Client（Bundle ID / 包名 + SHA-1），**不能**用 Web Client ID 替代。详见 [INTEGRATION.md](INTEGRATION.md) §Google OAuth。
+各 App 仍须在 Google Cloud Console 创建**自己的** iOS / Android OAuth Client（Bundle ID / 包名 + SHA-1），**不能**用 Web Client ID 替代。Web Client ID 见 §环境 × authapi × Web Client ID。详见 [INTEGRATION.md](INTEGRATION.md) §Google OAuth。
 
 ### Apple
 

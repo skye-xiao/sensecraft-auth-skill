@@ -88,8 +88,75 @@ Base = `authDomain()`（须尾斜杠）。
 
 ### oauth/mobile
 
-Google/Apple：`accountType`, `platform` (`ios`|`android`), `idToken`  
-GitHub：`accountType`, `platform`, `code`
+**Content-Type：`application/json`**
+
+| 字段 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| `accountType` | string | 是 | `google` · `apple` · `github`（**小写**） |
+| `platform` | string | 是 | `ios` · `android` |
+| `idToken` | string | Google/Apple | OpenID JWT；Apple 传 `identityToken` |
+| `code` | string | GitHub | 授权码；与 `idToken` **二选一**（按厂商） |
+
+**不要**传 `accessToken`、`redirect_uri`、`code_verifier`（除非 OpenAPI 明确要求）。
+
+#### Google（iOS / Android）
+
+```http
+POST /api/v1/auth/oauth/mobile
+Content-Type: application/json
+
+{
+  "accountType": "google",
+  "platform": "ios",
+  "idToken": "<Google Sign-In 返回的 id_token>"
+}
+```
+
+#### Apple
+
+```http
+POST /api/v1/auth/oauth/mobile
+Content-Type: application/json
+
+{
+  "accountType": "apple",
+  "platform": "ios",
+  "idToken": "<Sign in with Apple 的 identityToken>"
+}
+```
+
+#### GitHub
+
+```http
+POST /api/v1/auth/oauth/mobile
+Content-Type: application/json
+
+{
+  "accountType": "github",
+  "platform": "android",
+  "code": "<OAuth 回调 URL 中的 code，一次性>"
+}
+```
+
+#### 成功响应（`code === 0`）
+
+```json
+{
+  "code": 0,
+  "msg": "success",
+  "data": {
+    "token": "<access_token>",
+    "refresh_token": "<refresh_token>",
+    "user_id": 123,
+    "account": "user@example.com",
+    "email": "user@example.com",
+    "nickname": "User",
+    "org_id": 1
+  }
+}
+```
+
+常见失败：**17001**（idToken 无效 / aud 与 Web Client 档位不匹配）· **17002**（accountType 未开通）
 
 ### 登录成功 data 常见字段
 
@@ -128,6 +195,8 @@ GitHub：`accountType`, `platform`, `code`
 
 接口字段以 **线上 SenseCraft authapi OpenAPI** 为准（内网或运维提供的 swagger）。  
 本 Skill 与宿主 App auth 实现及 **SenseCraft authapi OpenAPI** 保持一致；冲突时：**OpenAPI + 线上行为 > 旧文档**。
+
+**勿与产品后端 OpenAPI 混淆**：`sensecraft-respeaker-service` 等产品的 `/api/v1/user/app/login` 属于另一套网关契约；本 Skill 仅覆盖 **authapi**（`oauth/mobile`、`getEmailCode` 等，Host 见 [SKILL.md](SKILL.md) §环境）。
 
 ---
 

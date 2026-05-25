@@ -42,7 +42,7 @@
 
 | 类型 | 谁建 | 写进 App 代码？ |
 |------|------|----------------|
-| **Web Client**（PROD/DEV） | Seeed Google Cloud 项目，**按 authapi 环境** | ✅ 作 `serverClientId`（见 SKILL.md 环境表） |
+| **Web Client**（PROD/DEV） | Seeed Google Cloud 项目，**按 authapi 档位**（见 [SKILL.md](SKILL.md) §环境 × authapi × Web Client ID） | ✅ 作 `serverClientId` |
 | **iOS Client** | 各 App 在 Console 建，Bundle ID 与 App 一致 | ✅ `GIDClientID` + reversed URL scheme |
 | **Android Client** | 各 App 在 Console 建，包名 + SHA-1 | ❌ 仅 Console；Play Services 自动匹配 |
 

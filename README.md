@@ -26,9 +26,11 @@ Agent 改登录时：**本 Skill** + **宿主 App 的 auth 源码与路由文档
 ### 任意项目（推荐，团队统一）
 
 ```bash
-git clone https://github.com/Seeed-Studio/sensecraft-auth-skill.git \
+git clone https://github.com/skye-xiao/sensecraft-auth-skill.git \
   ~/.cursor/skills/sensecraft-auth
 ```
+
+> 仓库 canonical remote 为 `skye-xiao/sensecraft-auth-skill`；若组织迁移至 `Seeed-Studio/sensecraft-auth-skill`，将 URL 替换即可。
 
 Cursor / Claude：`@sensecraft-auth`  
 更新：`cd ~/.cursor/skills/sensecraft-auth && git pull`
@@ -37,7 +39,7 @@ Cursor / Claude：`@sensecraft-auth`
 
 ```bash
 cd your-app
-git submodule add https://github.com/Seeed-Studio/sensecraft-auth-skill.git vendor/sensecraft-auth-skill
+git submodule add https://github.com/skye-xiao/sensecraft-auth-skill.git vendor/sensecraft-auth-skill
 ln -sfn ../../vendor/sensecraft-auth-skill .cursor/skills/sensecraft-auth
 ```
 
