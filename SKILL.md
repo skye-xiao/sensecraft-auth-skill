@@ -18,13 +18,13 @@ description: >-
 | 在范围内 | 不在范围内（除非用户明确要求） |
 |----------|-------------------------------|
 | `authDomain()` / authapi HTTP | 产品业务网关（Portal 等） |
-| 邮箱验证码、注册、登录、重置密码 | 产品自有 JWT（如 `external/sensecraft/login`） |
+| 邮箱验证码、注册、登录、重置密码 | 产品自有 JWT / Portal 登录（各 App 路径不同，见 [INTEGRATION.md](INTEGRATION.md)） |
 | `POST /api/v1/auth/oauth/mobile` | BLE、设备、非 auth 业务 API |
 | SenseCraft `token` + `refresh_token` | — |
 | Google / Apple / GitHub IdP 配置 | — |
 
 **登录成功终点（SenseCraft 层）**：`data.token` + `data.refresh_token` 持久化。  
-之后的产品业务 JWT 交换见宿主 App 实现（如 reSpeaker 的 Voice 网关登录逻辑）。
+之后的产品业务 JWT / 网关登录见各宿主 App（见 [INTEGRATION.md](INTEGRATION.md) §SenseCraft 层 vs 产品层）。
 
 ---
 
@@ -34,13 +34,13 @@ description: >-
 任务类型？
 ├─ 改 API/客户端   → reference.md 接口矩阵 + 宿主项目 Repository 实现
 ├─ 配 IdP/编译     → reference.md §IdP + 编译变量
-├─ 改 UI/路由      → 宿主 App auth 模块 + 路由文档（如 `APP_ROUTES.md`）
+├─ 改 UI/路由      → 宿主 App auth 模块 + 路由文档（见 INTEGRATION.md）
 ├─ 排错            → §排错决策树 + examples.md
 └─ 新增 OAuth 厂商 → §Checklist + examples.md §4
 ```
 
 1. 读 [reference.md](reference.md)（API、错误码、IdP）
-2. 若在当前 App 仓库内：读 auth 源码与路由（如 `lib/src/features/auth/`、`docs/APP_ROUTES.md`）
+2. 若在当前 App 仓库内：读 auth 源码与路由（路径见 [INTEGRATION.md](INTEGRATION.md)）
 3. 改 authapi 行为时：同步更新 **sensecraft-auth-skill** 仓库
 
 ---
@@ -134,10 +134,12 @@ SenseCraft token + refresh_token
 - **Web Client ID ≠ iOS GIDClientID ≠ Android Client ID**（见 reference.md）
 - **不用 Firebase**
 
-| 环境 | Web Client ID（Seeed 示例） |
-|------|----------------------------|
-| PROD | `721415563732-gvsfu25trpg6buls5l6kvpf7fqhfrarg.apps.googleusercontent.com` |
-| DEV | `721415563732-onmkav3p8u5ahq35265am22ulbm6kf9p.apps.googleusercontent.com` |
+| 环境 | Web Client ID（Seeed 组织级，作 `serverClientId`） |
+|------|--------------------------------------------------|
+| PROD / 国际 | `721415563732-gvsfu25trpg6buls5l6kvpf7fqhfrarg.apps.googleusercontent.com` |
+| DEV / 测试 | `721415563732-onmkav3p8u5ahq35265am22ulbm6kf9p.apps.googleusercontent.com` |
+
+各 App 仍须在 Google Cloud Console 创建**自己的** iOS / Android OAuth Client（Bundle ID / 包名 + SHA-1），**不能**用 Web Client ID 替代。详见 [INTEGRATION.md](INTEGRATION.md) §Google OAuth。
 
 ### Apple
 

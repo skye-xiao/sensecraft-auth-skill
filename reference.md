@@ -1,6 +1,6 @@
 # SenseCraft Auth — Reference
 
-> 配合 [SKILL.md](SKILL.md)。宿主 App 代码路径见各项目 auth 模块与路由文档（如 reSpeaker 的 `lib/src/features/auth/`、`docs/APP_ROUTES.md`）。
+> 配合 [SKILL.md](SKILL.md)。宿主 App 集成见 [INTEGRATION.md](INTEGRATION.md)。
 
 ## authapi 接口矩阵
 
@@ -191,9 +191,6 @@ App ID 开启 Sign in with Apple；Xcode Capability；传 `identityToken` 为 `i
 
 ## 宿主 App 集成
 
-本 Skill **不含**具体工程路径。在宿主 App 仓库内查阅，例如 reSpeaker：
+本 Skill **不含**具体工程路径。在宿主 App 仓库内查阅 auth 模块、路由文档与环境配置；检查清单与已知 App 索引见 [INTEGRATION.md](INTEGRATION.md)。
 
-- `lib/src/features/auth/` — 登录 / OAuth 实现
-- `docs/APP_ROUTES.md` — 登录相关路由（`/login`、`/login/authorize` 等）
-
-Agent 任务 = **本 Skill** + 宿主 App auth 源码与路由文档。
+Agent 任务 = **本 Skill** + **宿主 App auth 源码与路由文档**。

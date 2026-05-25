@@ -1,14 +1,29 @@
 # sensecraft-auth-skill
 
+> **SenseCraft authapi 通用 Agent Skill，供多 App 复用**
+
 SenseCraft **authapi** Agent Skill：邮箱注册/登录、验证码、Google / Apple / GitHub OAuth、token 刷新、用户资料 API。
 
-**一个仓库、一份 Skill** — 不包含 Voice 业务 JWT、BLE 等产品逻辑。各 App 的代码路径见 auth 模块与路由文档（如 reSpeaker 的 `lib/src/features/auth/`、`docs/APP_ROUTES.md`）。
+**一个仓库、一份 Skill** — 只覆盖 SenseCraft 统一认证（authapi），不包含各 App 的产品业务 JWT、BLE、设备协议等。具体代码路径与路由见各宿主 App 仓库（见 [INTEGRATION.md](INTEGRATION.md)）。
+
+---
+
+## 适用对象
+
+任意接入 SenseCraft authapi 的移动 / Web App，例如：
+
+| App | 包名 / Bundle ID | 宿主 auth 文档 |
+|-----|------------------|--------------|
+| SenseCraft Voice | `cc.seeed.voice` | 宿主仓库 `lib/src/features/auth/` · `docs/APP_ROUTES.md` |
+| Seeedash | `cc.seeed.seeedash` | 见 Seeedash 仓库 auth 模块与路由文档 |
+
+Agent 改登录时：**本 Skill** + **宿主 App 的 auth 源码与路由文档**。
 
 ---
 
 ## 安装
 
-### 任意项目（推荐团队统一）
+### 任意项目（推荐，团队统一）
 
 ```bash
 git clone https://github.com/Seeed-Studio/sensecraft-auth-skill.git \
@@ -26,12 +41,12 @@ git submodule add https://github.com/Seeed-Studio/sensecraft-auth-skill.git vend
 ln -sfn ../../vendor/sensecraft-auth-skill .cursor/skills/sensecraft-auth
 ```
 
-### 与 reSpeaker monorepo 同级（本 workspace）
+### 可选：与 App 仓库同级（本地 workspace 示例）
 
 ```
-reSpeaker_app/
-├── sensecraft-auth-skill/     ← 本仓库（单独 push GitHub）
-└── respeaker-app/
+your-workspace/
+├── sensecraft-auth-skill/     ← 本仓库
+└── your-app/
     └── .cursor/skills/sensecraft-auth → ../../sensecraft-auth-skill
 ```
 
@@ -41,9 +56,10 @@ reSpeaker_app/
 
 | 文件 | 说明 |
 |------|------|
-| [SKILL.md](SKILL.md) | 主 Skill |
+| [SKILL.md](SKILL.md) | 主 Skill（Agent 读取） |
 | [reference.md](reference.md) | API、错误码、IdP |
 | [examples.md](examples.md) | 排错、新增 OAuth |
+| [INTEGRATION.md](INTEGRATION.md) | 宿主 App 集成契约与检查清单 |
 | [CHANGELOG.md](CHANGELOG.md) | 版本变更 |
 
 ---
@@ -52,13 +68,12 @@ reSpeaker_app/
 
 | 仓库 | 职责 |
 |------|------|
-| **sensecraft-auth-skill**（本仓库） | SenseCraft authapi 通用知识 |
-| **respeaker-app** 等 | 具体代码、路由、Mermaid 文档；**不复制 Skill** |
-
-Agent 在 reSpeaker 改登录：读 **本 Skill** + **`respeaker-app/lib/src/features/auth/`** 与 **`docs/APP_ROUTES.md`**。
+| **sensecraft-auth-skill**（本仓库） | SenseCraft authapi 通用知识、OAuth 规则、排错 |
+| **各宿主 App 仓库** | 具体实现、UI、路由、产品业务 JWT；**不复制 Skill 正文** |
 
 ---
 
 ## 维护
 
-改 authapi / OAuth 通用规则 → 只改 **本仓库**，打 tag / push，全队 `git pull` 或更新 submodule。
+改 authapi / OAuth 通用规则 → 只改 **本仓库**，打 tag / push，全队 `git pull` 或更新 submodule。  
+某 App 专属路径或路由变更 → 改该 App 仓库文档，并在 [INTEGRATION.md](INTEGRATION.md) 的「已知宿主 App」表更新链接（若适用）。

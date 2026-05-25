@@ -1,6 +1,6 @@
 # SenseCraft Auth — Examples
 
-> 配合 [SKILL.md](SKILL.md)。宿主 App 代码路径见 auth 模块与路由文档（如 `lib/src/features/auth/`、`docs/APP_ROUTES.md`）。
+> 配合 [SKILL.md](SKILL.md)。宿主 App 路径与路由见 [INTEGRATION.md](INTEGRATION.md)。
 
 ---
 
@@ -16,7 +16,22 @@
 8. 选账号前即失败 / **DEVELOPER_ERROR (10)** / **canceled** → 多为缺 Android 客户端或 SHA-1 不匹配（IdP 层）
 9. Android `strings.xml` 的 `default_web_client_id`（若有）**不能**代替按环境的 Dart/配置逻辑
 
-**不要**：在 Web 客户端上配置 custom scheme redirect；**不要**把 Android OAuth Client ID 当作 `serverClientId` 写进代码。
+**不要**：在 Web 客户端上配置 custom scheme redirect；**不要**把 Android / iOS OAuth Client ID 当作 `serverClientId` 写进代码。
+
+---
+
+## 示例 1b：Google 报 `Custom scheme URIs are not allowed for 'WEB' client type`
+
+**症状**：授权页 400 `invalid_request`，提示 Web client 不允许 custom scheme。
+
+**原因**：App 原生登录误用了 **Web 类型** OAuth Client ID，或 redirect 走了 `com.googleusercontent.apps.xxx://` 却绑在 Web Client 上。
+
+**步骤**：
+
+1. Google Cloud Console 确认已建 **iOS / Android** Client（Bundle ID / 包名 + SHA-1 与 App 一致）
+2. iOS：`GIDClientID` = **iOS Client ID**；`CFBundleURLSchemes` = Console 给出的 reversed scheme
+3. `GoogleSignIn.initialize(serverClientId: ...)` 只用 **Web Client ID**（PROD/DEV，见 SKILL.md）
+4. **不要**把 Web Client ID 填进 iOS `GIDClientID` 或当作 Android 主 Client
 
 ---
 
@@ -109,5 +124,5 @@
 - [ ] email/login 用 multipart
 - [ ] pre-login 不带 stale Authorization
 - [ ] 未把产品业务 JWT 混进 SenseCraft-only 文档
-- [ ] 同步 sensecraft-auth-skill
+- [ ] 同步 sensecraft-auth-skill；宿主路径变更时更新 INTEGRATION.md 已知宿主表
 ```
