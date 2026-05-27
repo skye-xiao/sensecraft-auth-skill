@@ -67,6 +67,7 @@ your-workspace/
 | [SKILL.md](SKILL.md) | 主 Skill（Agent 读取） |
 | [reference.md](reference.md) | API、错误码、IdP |
 | [examples.md](examples.md) | 排错、新增 OAuth |
+| [IDP_SETUP.md](IDP_SETUP.md) | **完整 IdP 配置**（SenseCraft Voice 实例：Google / Apple / GitHub） |
 | [INTEGRATION.md](INTEGRATION.md) | 宿主 App 集成契约与检查清单 |
 | [SETUP.md](SETUP.md) | Cursor / Claude / Codex 安装与排错 |
 | [CHANGELOG.md](CHANGELOG.md) | 版本变更 |

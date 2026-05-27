@@ -54,7 +54,7 @@
 
 | App | 包名 / Bundle ID | Auth 实现 | 路由 / 说明 |
 |-----|------------------|-----------|-------------|
-| SenseCraft Voice | `cc.seeed.voice` | 宿主仓库 `lib/src/features/auth/` | 宿主仓库 `docs/APP_ROUTES.md` |
+| SenseCraft Voice | `cc.seeed.voice` | 宿主仓库 `lib/src/features/auth/` | [IDP_SETUP.md](IDP_SETUP.md) · `docs/APP_ROUTES.md` |
 | Seeedash | `cc.seeed.seeedash` | Seeedash 仓库 auth 模块 | Seeedash 仓库路由文档 |
 
 新增 App 接入时：在本表增加一行，并在该 App 仓库维护 auth 文档链接。

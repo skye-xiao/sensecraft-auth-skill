@@ -35,7 +35,7 @@ description: >-
 ```
 任务类型？
 ├─ 改 API/客户端   → reference.md 接口矩阵 + 宿主项目 Repository 实现
-├─ 配 IdP/编译     → reference.md §IdP + 编译变量
+├─ 配 IdP/编译     → [IDP_SETUP.md](IDP_SETUP.md)（SenseCraft Voice 完整实例）+ reference.md §IdP
 ├─ 改 UI/路由      → 宿主 App auth 模块 + 路由文档（见 INTEGRATION.md）
 ├─ 排错            → §排错决策树 + examples.md
 └─ 新增 OAuth 厂商 → §Checklist + examples.md §4
@@ -148,7 +148,7 @@ SenseCraft token + refresh_token
 - **Web Client ID ≠ iOS GIDClientID ≠ Android Client ID**（见 reference.md）
 - **不用 Firebase**
 
-各 App 仍须在 Google Cloud Console 创建**自己的** iOS / Android OAuth Client（Bundle ID / 包名 + SHA-1），**不能**用 Web Client ID 替代。Web Client ID 见 §环境 × authapi × Web Client ID。详见 [INTEGRATION.md](INTEGRATION.md) §Google OAuth。
+各 App 仍须在 Google Cloud Console 创建**自己的** iOS / Android OAuth Client（Bundle ID / 包名 + SHA-1），**不能**用 Web Client ID 替代。Web Client ID 见 §环境 × authapi × Web Client ID。**SenseCraft Voice 完整对照表**见 [IDP_SETUP.md](IDP_SETUP.md) §1。
 
 ### Apple
 
@@ -159,6 +159,7 @@ Sign in with Apple Capability；`idToken` = `identityToken`；常见失败 1000 
 - Callback URL 与 App 内 `redirect_uri` **完全一致**（scheme **小写**）
 - Client ID 可编译注入；Secret 不进 App
 - Scope 常用：`read:user user:email`
+- SenseCraft Voice 实例：`Iv23liaPMJxOyKXEs8kt`，callback `sensecraftvoice://oauth-callback` — 见 [IDP_SETUP.md](IDP_SETUP.md) §3
 
 ---
 

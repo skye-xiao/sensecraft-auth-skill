@@ -1,6 +1,15 @@
 # SenseCraft Auth — Examples
 
-> 配合 [SKILL.md](SKILL.md)。宿主 App 路径与路由见 [INTEGRATION.md](INTEGRATION.md)。
+> 配合 [SKILL.md](SKILL.md)。**从零配置 IdP** 见 [IDP_SETUP.md](IDP_SETUP.md)（SenseCraft Voice 完整实例）。宿主路径见 [INTEGRATION.md](INTEGRATION.md)。
+
+---
+
+## 示例 0：快速入口
+
+| 需求 | 文档 |
+|------|------|
+| Google / Apple / GitHub **完整配置**（Console + App + oauth/mobile） | [IDP_SETUP.md](IDP_SETUP.md) |
+| 仅排错 | 下文 §1–§3 |
 
 ---
 

@@ -6,6 +6,7 @@
 
 ### Added
 
+- [IDP_SETUP.md](IDP_SETUP.md)：SenseCraft Voice 完整 Google / Apple / GitHub 配置（Console + App + oauth/mobile）
 - SKILL §环境 × authapi × Web Client ID：`cn` 与 `release` 同属 PROD 档
 - reference §oauth/mobile：Google / Apple / GitHub 完整 JSON 请求与成功响应示例
 - SKILL / reference：明确 authapi ≠ 产品后端（`sensecraft-respeaker-service` 等）
