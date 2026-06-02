@@ -54,10 +54,33 @@
 
 | App | 包名 / Bundle ID | Auth 实现 | 路由 / 说明 |
 |-----|------------------|-----------|-------------|
-| SenseCraft Voice | `cc.seeed.voice` | 宿主仓库 `lib/src/features/auth/` | [IDP_SETUP.md](IDP_SETUP.md) · `docs/APP_ROUTES.md` |
+| SenseCraft Voice | `cc.seeed.voice` | 宿主仓库 `lib/src/features/auth/` | [IDP_SETUP.md](IDP_SETUP.md) · `docs/app_routes.md` |
 | Seeedash | `cc.seeed.seeedash` | Seeedash 仓库 auth 模块 | Seeedash 仓库路由文档 |
 
 新增 App 接入时：在本表增加一行，并在该 App 仓库维护 auth 文档链接。
+
+---
+
+## SenseCraft Voice：错误码与国际化
+
+authapi 返回非 0 `code` 时，UI **不要**直接展示原始 `msg`（多为英文且与系统语言不一致）。应走统一本地化：
+
+| 文件 | 作用 |
+|------|------|
+| `lib/src/core/server/sensecraft_auth/sensecraft_error_codes.dart` | 与 authapi `HttpResponse` 对齐的常量（含 11014 手机、17005–17013 OAuth 等） |
+| `lib/src/core/server/server_error_localizer.dart` | `serverErrorMessage(context, e)`：`bizCode` → `AppLocalizations` |
+| `lib/src/core/l10n/app_localizations.dart` | 中英 `error*` 文案 |
+| `lib/src/core/server/auth/auth_email_conflict.dart` | `11013` / `11014` → 已注册，引导登录而非通用失败 |
+
+登录相关页（`password_login_page`、`email_login_page`、`register_*`、`forgot_password_page`、`third_party_authorize_page` 等）已调用 `serverErrorMessage`。
+
+**改 authapi 错误码或新增 code 时**：
+
+1. 更新 authapi `HttpResponse` 常量（服务端）
+2. 同步 `sensecraft_error_codes.dart`
+3. 在 `server_error_localizer.dart` 的 `_messageForBizCode` 增加 case
+4. 在 `app_localizations.dart` 增加 getter + `en` / `zh` 条目
+5. 更新本 Skill [reference.md](reference.md) §错误码速查
 
 ---
 
@@ -71,6 +94,7 @@
 - [ ] GitHub：callback URL 与 App redirect_uri 完全一致
 - [ ] SenseCraft token 持久化后，若有业务 JWT，在宿主模块单独实现
 - [ ] 改 authapi 行为时同步更新 sensecraft-auth-skill
+- [ ] 新增/变更 bizCode 时同步 Voice：`sensecraft_error_codes.dart` + `server_error_localizer.dart` + l10n
 ```
 
 ---

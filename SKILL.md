@@ -118,7 +118,8 @@ SenseCraft token + refresh_token
 | 忘记密码 | getEmailCode(type=2) → resetPassword |
 
 - `17004` → **视为可继续**，用上一封邮件验证码
-- `11013` → 邮箱已注册，引导登录
+- `11013` / `11014` → 邮箱或手机已注册，引导登录（勿当 unknown error）
+- 展示错误：宿主 App 用 `serverErrorMessage` 映射 bizCode → 中英 l10n（Voice 见 [INTEGRATION.md](INTEGRATION.md) §错误码与国际化）；完整 code 表见 [reference.md](reference.md) §错误码速查
 
 ---
 
@@ -197,8 +198,9 @@ Sign in with Apple Capability；`idToken` = `identityToken`；常见失败 1000 
 登录失败
 ├─ IdP 层？ → Google SHA-1 / serverClientId / Apple Capability / GitHub callback
 ├─ oauth/mobile？ → 17001 凭证；17002 accountType
-├─ 验证码？ → 17004 用旧码；11008/11010 码错
-└─ 401？ → authapi host；raw token；refresh 过期
+├─ 验证码？ → 17004 用旧码；11008/11010/11015/11016 码错或过期
+├─ 展示英文 msg？ → 查宿主是否走 serverErrorMessage，勿裸显 biz msg
+└─ 401？ → authapi host；raw token；11101/11102/11103
 ```
 
 更多：[examples.md](examples.md)（含 Apple §2、注册 §7）· API/错误码：[reference.md](reference.md)

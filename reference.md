@@ -61,7 +61,7 @@ Base = `authDomain()`（须尾斜杠）。
 | `password` | MD5 32 位小写 hex |
 | 成功 `data` | 通常只有 `userId`，**无 token** → 需再调 email/login |
 
-常见错误：`11002`/`11008` 验证码问题 · `11013` 邮箱已注册
+常见错误：`11008` 验证码错误 · `11002` 账号不存在 · `11013`/`11014` 已注册 → 引导登录
 
 ### resetPassword（JSON）
 
@@ -73,7 +73,7 @@ Base = `authDomain()`（须尾斜杠）。
 }
 ```
 
-`code` 来自 getEmailCode **type=2**。常见：`11010` 码错/过期 · `11002` 账号不存在
+`code` 来自 getEmailCode **type=2**。常见：`11010`/`11008` 码错或过期 · `11002` 账号不存在
 
 ### changePassword（JSON，已登录）
 
@@ -166,28 +166,76 @@ Content-Type: application/json
 
 ## 错误码速查
 
-`code` 可能是 number 或 string `"0"`，比较前先归一化为 int。
+与 authapi `HttpResponse` 常量一致。`code` 可能是 number 或 string `"0"`，比较前用 `parseSenseCraftCode` 归一化为 int。
 
-| code | 含义 | App 处理 |
-|------|------|----------|
-| `0` | 成功 | — |
-| `10000` | 服务异常 | 展示 msg |
-| `10009` | accessKey 相关 | 检查 token |
-| `11002` | 账号不存在 / 验证码无效 | 按场景提示 |
-| `11005` | 密码错误 | |
-| `11008` | 验证码错误 | |
-| `11010` | 重置密码码错/过期 | |
-| `11013` | 邮箱已注册 | → 引导登录 |
-| `11025` | 账号冻结 | |
-| `11202` | 参数错误 | 查 body 格式 |
-| `11229` | 登录尝试过多 | 稍后重试 |
-| `11101` | refresh 过期 | 重新登录 |
-| `11102` | accessKey 无效 | 重新登录 |
-| `11103` | refresh 无效 | 重新登录 |
-| `17001` | OAuth 失败 | 查 IdP 凭证 / aud |
-| `17002` | 不支持 accountType | 后端未开通 |
-| `17003` | 用户信息错误 | refresh / 资料接口 |
-| `17004` | 验证码仍有效 / 限流 | **继续用旧码** |
+**SenseCraft Voice 客户端**：常量见 `lib/src/core/server/sensecraft_auth/sensecraft_error_codes.dart`；展示文案经 `serverErrorMessage()` → `server_error_localizer.dart` + `AppLocalizations`（中英）。未映射的 code 仍 fallback 到响应 `msg`。
+
+### 通用 (10xxx)
+
+| code | 服务端 msg（摘要） | Voice l10n | 处理建议 |
+|------|-------------------|------------|----------|
+| `0` | success | — | 成功 |
+| `10000` | server error | `errorInternalError` | 稍后重试 |
+| `10002` | Remote called error | `errorRemoteCalled` | 远端服务异常 |
+| `10007` | path not found | `errorPathNotFound` | 检查 path / 环境 |
+| `10009` | Lack of necessary parameters | `errorMissingParams` | 缺 token/参数 → 重新登录 |
+
+### 账号 / 邮箱 / 手机 / 密码 (110xx)
+
+| code | 服务端 msg（摘要） | Voice l10n | 处理建议 |
+|------|-------------------|------------|----------|
+| `11002` | No account exists | `errorAccountNotFound` | 账号不存在或先注册 |
+| `11005` | Password error | `errorPasswordIncorrect` | 密码错误 |
+| `11008` | Verification code error | `errorVerifyCodeInvalid` | 验证码错误 |
+| `11010` | Verification code expired… | `errorVerifyCodeExpired` | 验证码过期，重新获取 |
+| `11013` | email registered | `errorEmailAlreadyRegistered` | **→ 引导登录** |
+| `11014` | mobile registered | `errorMobileAlreadyRegistered` | **→ 引导登录**（国内） |
+| `11015` | Sms code error | `errorVerifyCodeInvalid` | 短信验证码错误 |
+| `11016` | Sms code expired… | `errorVerifyCodeExpired` | 短信码过期 |
+| `11017` | Sms code has been sent | `errorSmsCodeAlreadySent` | 稍后再发 |
+| `11018` | Mobile required | `errorMobileRequired` | 必填手机号 |
+| `11019` | Invalid mobile format | `errorMobileFormatInvalid` | 格式错误 |
+| `11020` | New password must differ… | `errorNewPasswordSameAsOld` | 新密码不能与旧密码相同 |
+| `11025` | Account frozen | `errorAccountFrozen` | 联系客服 |
+
+### Token (111xx)
+
+| code | 服务端 msg（摘要） | Voice l10n | 处理建议 |
+|------|-------------------|------------|----------|
+| `11101` | Validation token expires | `errorTokenExpired` | 重新登录；客户端可尝试 refresh |
+| `11102` | Invalid token | `errorTokenInvalid` | 重新登录 |
+| `11103` | Refresh_token error | `errorTokenInvalid` | 重新登录 |
+
+### 权限 / 参数 / OSS / 限流 (112xx)
+
+| code | 服务端 msg（摘要） | Voice l10n | 处理建议 |
+|------|-------------------|------------|----------|
+| `11201` | no options permission | `errorForbidden` | 无权限 |
+| `11202` | parameters invalid | `errorInvalidParams` | 查 JSON/multipart 格式 |
+| `11229` | exceed login limitation | `errorTooManyLoginAttempts` | 稍后重试 |
+| `11233` | OSS upload not configured | `errorOssUploadNotConfigured` | 上传未配置 |
+| `11234` | Failed to generate upload URL | `errorOssPresignFailed` | 上传地址失败 |
+
+### OAuth / 条款 / 绑定 (17xxx)
+
+| code | 服务端 msg（摘要） | Voice l10n | 处理建议 |
+|------|-------------------|------------|----------|
+| `17000` | authorize code invalid | `errorAuthorizeCodeInvalid` | 授权码无效，重试 |
+| `17001` | failed to get user info | `errorOauthFailed` | IdP 凭证 / `id_token.aud` |
+| `17002` | Unsupported login methods | `errorUnsupportedOAuthProvider` | 后端未开通 accountType |
+| `17003` | account invalid | `errorUserInfoError` | 重新登录 |
+| `17004` | validating-code has sent… | `errorVerifyCodeNotExpired` | **继续用上一封邮件验证码** |
+| `17005` | oauth2 context incorrect | `errorOauthStateMismatch` | 重新发起 OAuth |
+| `17006` | Authorization code not provided | `errorOauthCodeMissing` | 缺少 code |
+| `17007` | state not provided | `errorOauthStateMissing` | 缺少 state |
+| `17008` | email from oauth2 has existed | `errorOauthAccountNeedBind` | 邮箱已注册 → 绑定/邮箱登录 |
+| `17009` | child account can not logout | `errorChildAccountCannotDelete` | 子账号不可注销 |
+| `17010` | accept Terms of Service | `errorTermsAcceptanceRequired` | 须同意服务条款 |
+| `17011` | third-party linked elsewhere | `errorOauthForeignIdTaken` | 第三方账号已被占用 |
+| `17012` | already linked other sign-in | `errorOauthOrgAlreadyBound` | 已绑定其它登录方式 |
+| `17013` | WeChat no unionid | `errorOauthWechatNoUnionid` | 开放平台 / 授权范围 |
+
+> **注意**：`11002` 在 SenseCraft 为「账号不存在」；部分**产品业务后端**可能复用同码表示其它含义，Voice 登录页以 SenseCraft 文案为准。
 
 ---
 

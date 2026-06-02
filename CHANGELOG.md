@@ -6,6 +6,9 @@
 
 ### Added
 
+- [reference.md](reference.md) §错误码速查：与 authapi `HttpResponse` 全量对齐（10xxx–17xxx），含 Voice `AppLocalizations` key
+- [INTEGRATION.md](INTEGRATION.md) §SenseCraft Voice：错误码与国际化（`sensecraft_error_codes.dart`、`server_error_localizer.dart`）
+- [examples.md](examples.md) §10：Voice `serverErrorMessage` 用法；§8 补充 `11014`
 - [IDP_SETUP.md](IDP_SETUP.md)：SenseCraft Voice 完整 Google / Apple / GitHub 配置（Console + App + oauth/mobile）
 - SKILL §环境 × authapi × Web Client ID：`cn` 与 `release` 同属 PROD 档
 - reference §oauth/mobile：Google / Apple / GitHub 完整 JSON 请求与成功响应示例
@@ -19,7 +22,7 @@
 - examples §1b：Web Client 误用于原生登录（`Custom scheme URIs are not allowed for 'WEB' client type`）
 - Apple Sign in 排错示例（examples §2）
 - `registerByEmail` / `resetPassword` / `changePassword` 请求体（reference）
-- 扩展错误码表（10009、11102、17003 等）
+- 错误码表改为全量表（替代旧版仅 15 项速查）；修正 `10009`（缺参）、`11102`（Invalid token）含义
 - OpenAPI 权威来源说明（reference）
 - GitHub callback 通用写法，具体 URL 指向宿主文档
 

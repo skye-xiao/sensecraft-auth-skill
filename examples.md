@@ -119,9 +119,22 @@
 
 ---
 
-## 示例 8：注册 / 发码 11013
+## 示例 8：注册 / 发码 11013 / 11014
 
-注册场景 sendEmailCode 或 register 返回 **11013**（邮箱已注册）→ 导航到登录页，勿 SnackBar 通用失败。
+注册场景 sendEmailCode 或 register 返回 **11013**（邮箱已注册）或 **11014**（手机已注册）→ 导航到登录页，勿 SnackBar 通用失败。Voice 侧 `emailAlreadyRegisteredForAuthFlow()` 已识别两码。
+
+---
+
+## 示例 10：Voice 客户端错误展示（i18n）
+
+```dart
+// 捕获 ServerException 后
+setState(() => _error = serverErrorMessage(context, e));
+```
+
+- `e.bizCode` 来自信封 `code`（int 或 string 均需 `parseSenseCraftCode`）
+- 优先 `_messageForBizCode`；无映射再 fallback `msg`
+- 新增 authapi 错误码：见 [INTEGRATION.md](INTEGRATION.md) §SenseCraft Voice：错误码与国际化
 
 ---
 
@@ -134,4 +147,5 @@
 - [ ] pre-login 不带 stale Authorization
 - [ ] 未把产品业务 JWT 混进 SenseCraft-only 文档
 - [ ] 同步 sensecraft-auth-skill；宿主路径变更时更新 INTEGRATION.md 已知宿主表
+- [ ] 新增 bizCode：sensecraft_error_codes + server_error_localizer + l10n + reference §错误码
 ```
